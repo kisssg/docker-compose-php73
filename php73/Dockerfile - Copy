@@ -1,0 +1,21 @@
+FROM debian:bullseye AS img-1
+SHELL ["/bin/bash", "-c"]
+COPY scripts/install-packages.sh /usr/local/bin/
+RUN install-packages.sh
+
+FROM img-1 AS img-6
+COPY scripts/install-php7.3.sh /usr/local/bin/
+COPY downloads/php-7.3.33.tar.xz /usr/local/src/
+RUN install-php7.3.sh
+
+FROM img-6 AS img-7
+COPY scripts/setup.sh /usr/local/bin/
+RUN setup.sh
+
+FROM img-7 AS img-9
+COPY scripts/install-php7.3-extensions.sh /usr/local/bin/
+RUN install-php7.3-extensions.sh
+
+ENV IS_DOCKER=true
+
+WORKDIR /srv/www/apollof/
